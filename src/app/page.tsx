@@ -1,64 +1,57 @@
-import Image from "next/image";
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className={styles.dashboardContainer}>
+      {/* Sidebar */}
+      <aside className={styles.sidebar}>
+        <div className={styles.logo}>
+          <span style={{ fontSize: '1.5rem' }}>🦷</span>
+          DentalSync
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        
+        <nav className={styles.nav}>
+          <a href="#" className={`${styles.navItem} ${styles.navItemActive}`}>Dashboard</a>
+          <a href="#" className={styles.navItem}>Pacientes</a>
+          <a href="#" className={styles.navItem}>Citas</a>
+          <a href="#" className={styles.navItem}>WhatsApp Config</a>
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className={styles.mainContent}>
+        <header className={styles.header}>
+          <h1 className={`${styles.title} fade-in`}>Bienvenido, Dr. Admin</h1>
+          <button className="btn btn-primary">
+            + Nueva Cita
+          </button>
+        </header>
+
+        {/* Stats */}
+        <div className={`${styles.statsGrid} slide-up`}>
+          <div className={styles.statCard}>
+            <span className={styles.statLabel}>Pacientes Totales</span>
+            <span className={styles.statValue}>1,248</span>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statLabel}>Citas Hoy</span>
+            <span className={styles.statValue}>8</span>
+          </div>
+          <div className={styles.statCard}>
+            <span className={styles.statLabel}>Recordatorios Enviados</span>
+            <span className={styles.statValue}>24</span>
+          </div>
+        </div>
+
+        {/* Quick Action Area */}
+        <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '200ms' }}>
+          <h2 className={styles.actionTitle}>Próximas Citas</h2>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+            Aquí se mostrará la tabla de citas con botones para enviar recordatorios por WhatsApp.
+          </p>
+          <div className="glass-panel" style={{ padding: '1rem', borderRadius: 'var(--radius-md)' }}>
+            <p><strong>10:00 AM</strong> - Juan Pérez (Limpieza) <button className="btn btn-secondary" style={{ float: 'right', padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}>Enviar WhatsApp</button></p>
+          </div>
         </div>
       </main>
     </div>
