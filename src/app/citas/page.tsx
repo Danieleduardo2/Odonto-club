@@ -73,22 +73,8 @@ export default function Citas() {
   };
 
   return (
-    <div className={styles.dashboardContainer}>
-      <aside className={styles.sidebar}>
-        <div className={styles.logo}>
-          <span>🦷</span>
-          OdontoClub
-        </div>
-        
-        <nav className={styles.nav}>
-          <Link href="/" className={styles.navItem}>Dashboard</Link>
-          <Link href="/pacientes" className={styles.navItem}>Pacientes</Link>
-          <Link href="/citas" className={`${styles.navItem} ${styles.navItemActive}`}>Citas</Link>
-        </nav>
-      </aside>
-
-      <main className={styles.mainContent}>
-        <header className={styles.header}>
+    <>
+      <header className={styles.header}>
           <h1 className={`${styles.title} fade-in`}>Control de Citas</h1>
           <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancelar" : "+ Nueva Cita"}
@@ -165,7 +151,6 @@ export default function Citas() {
             </table>
           </div>
         </div>
-      </main>
-    </div>
+    </>
   );
 }

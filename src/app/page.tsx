@@ -3,25 +3,8 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className={styles.dashboardContainer}>
-      {/* Sidebar */}
-      <aside className={styles.sidebar}>
-        <div className={styles.logo}>
-          <span>🦷</span>
-          OdontoClub
-        </div>
-        
-        <nav className={styles.nav}>
-          <Link href="/" className={`${styles.navItem} ${styles.navItemActive}`}>Dashboard</Link>
-          <Link href="/pacientes" className={styles.navItem}>Pacientes</Link>
-          <Link href="/citas" className={styles.navItem}>Citas</Link>
-          <Link href="/configuracion" className={styles.navItem}>WhatsApp Config</Link>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main className={styles.mainContent}>
-        <header className={styles.header}>
+    <>
+      <header className={styles.header}>
           <h1 className={`${styles.title} fade-in`}>Bienvenido, Dr. Admin</h1>
           <Link href="/citas?new=true">
             <button className="btn btn-primary">
@@ -57,7 +40,6 @@ export default function Home() {
             <button className="btn" style={{ backgroundColor: '#e2e8f0', color: 'var(--text-main)' }}>Enviar WhatsApp</button>
           </div>
         </div>
-      </main>
-    </div>
+    </>
   );
 }

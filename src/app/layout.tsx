@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Sidebar from "@/components/Sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -36,7 +37,12 @@ export default function RootLayout({
             },
           }}
         />
-        {children}
+        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-page)' }}>
+          <Sidebar />
+          <div style={{ flex: 1, padding: '2rem 3rem', overflowY: 'auto' }}>
+            {children}
+          </div>
+        </div>
       </body>
     </html>
   );

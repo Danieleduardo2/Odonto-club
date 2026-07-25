@@ -53,22 +53,8 @@ export default function Pacientes() {
   };
 
   return (
-    <div className={styles.dashboardContainer}>
-      <aside className={styles.sidebar}>
-        <div className={styles.logo}>
-          <span>🦷</span>
-          OdontoClub
-        </div>
-        
-        <nav className={styles.nav}>
-          <Link href="/" className={styles.navItem}>Dashboard</Link>
-          <Link href="/pacientes" className={`${styles.navItem} ${styles.navItemActive}`}>Pacientes</Link>
-          <Link href="/citas" className={styles.navItem}>Citas</Link>
-        </nav>
-      </aside>
-
-      <main className={styles.mainContent}>
-        <header className={styles.header}>
+    <>
+      <header className={styles.header}>
           <h1 className={`${styles.title} fade-in`}>Directorio de Pacientes</h1>
           <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancelar" : "+ Nuevo Paciente"}
@@ -122,7 +108,6 @@ export default function Pacientes() {
             </table>
           </div>
         </div>
-      </main>
-    </div>
+    </>
   );
 }
