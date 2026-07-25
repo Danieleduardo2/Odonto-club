@@ -75,7 +75,7 @@ export default function Citas() {
     <div className={styles.dashboardContainer}>
       <aside className={styles.sidebar}>
         <div className={styles.logo}>
-          <span style={{ fontSize: '1.5rem' }}>🦷</span>
+          <span>🦷</span>
           OdontoClub
         </div>
         
@@ -95,8 +95,8 @@ export default function Citas() {
         </header>
 
         {showForm && (
-          <div className="glass-panel fade-in" style={{ padding: '2rem', marginBottom: '2rem', borderRadius: 'var(--radius-lg)' }}>
-            <h2 style={{ marginBottom: '1rem' }}>Programar Nueva Cita</h2>
+          <div className="card fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
+            <h2 style={{ marginBottom: '1rem', color: 'var(--text-main)' }}>Programar Nueva Cita</h2>
             <form onSubmit={handleCreateAppointment} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               
               <select required value={patientId} onChange={e => setPatientId(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
@@ -119,9 +119,9 @@ export default function Citas() {
         )}
 
         <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '200ms' }}>
-          <div className="glass-panel" style={{ padding: '1rem', borderRadius: 'var(--radius-md)' }}>
+          <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
             <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-              <thead>
+              <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
                 <tr style={{ borderBottom: '1px solid var(--border)' }}>
                   <th style={{ padding: '1rem' }}>Paciente</th>
                   <th style={{ padding: '1rem' }}>Fecha</th>

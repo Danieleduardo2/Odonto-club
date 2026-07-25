@@ -7,8 +7,8 @@ export default function Home() {
       {/* Sidebar */}
       <aside className={styles.sidebar}>
         <div className={styles.logo}>
-          <span style={{ fontSize: '1.5rem' }}>🦷</span>
-          DentalSync
+          <span>🦷</span>
+          OdontoClub
         </div>
         
         <nav className={styles.nav}>
@@ -31,29 +31,30 @@ export default function Home() {
         </header>
 
         {/* Stats */}
-        <div className={`${styles.statsGrid} slide-up`}>
-          <div className={styles.statCard}>
-            <span className={styles.statLabel}>Pacientes Totales</span>
-            <span className={styles.statValue}>1,248</span>
+        <div className={styles.statsGrid}>
+          <div className={`${styles.statCard} card fade-in`} style={{ animationDelay: '100ms' }}>
+            <div className={styles.statLabel}>Pacientes Totales</div>
+            <div className={styles.statValue}>1,248</div>
           </div>
-          <div className={styles.statCard}>
-            <span className={styles.statLabel}>Citas Hoy</span>
-            <span className={styles.statValue}>8</span>
+          <div className={`${styles.statCard} card fade-in`} style={{ animationDelay: '200ms' }}>
+            <div className={styles.statLabel}>Citas Hoy</div>
+            <div className={styles.statValue}>8</div>
           </div>
-          <div className={styles.statCard}>
-            <span className={styles.statLabel}>Recordatorios Enviados</span>
-            <span className={styles.statValue}>24</span>
+          <div className={`${styles.statCard} card fade-in`} style={{ animationDelay: '300ms' }}>
+            <div className={styles.statLabel}>Recordatorios Enviados</div>
+            <div className={styles.statValue}>24</div>
           </div>
         </div>
 
-        {/* Quick Action Area */}
-        <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '200ms' }}>
-          <h2 className={styles.actionTitle}>Próximas Citas</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
-            Aquí se mostrará la tabla de citas con botones para enviar recordatorios por WhatsApp.
-          </p>
-          <div className="glass-panel" style={{ padding: '1rem', borderRadius: 'var(--radius-md)' }}>
-            <p><strong>10:00 AM</strong> - Juan Pérez (Limpieza) <button className="btn btn-secondary" style={{ float: 'right', padding: '0.25rem 0.75rem', fontSize: '0.8rem' }}>Enviar WhatsApp</button></p>
+        {/* Citas del dia */}
+        <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '400ms' }}>
+          <h2 style={{ fontSize: '1.25rem', color: 'var(--text-main)' }}>Próximas Citas</h2>
+          <div className="card" style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <p style={{ color: 'var(--text-muted)' }}>Aquí se mostrará la tabla de citas con botones para enviar recordatorios por WhatsApp.</p>
+              <p style={{ marginTop: '1rem', fontWeight: 500, color: 'var(--text-main)' }}>10:00 AM - Juan Pérez (Limpieza)</p>
+            </div>
+            <button className="btn" style={{ backgroundColor: '#e2e8f0', color: 'var(--text-main)' }}>Enviar WhatsApp</button>
           </div>
         </div>
       </main>
