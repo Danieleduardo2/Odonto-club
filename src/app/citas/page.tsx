@@ -40,6 +40,12 @@ export default function Citas() {
 
   useEffect(() => {
     fetchData();
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('new') === 'true') {
+        setShowForm(true);
+      }
+    }
   }, []);
 
   const handleCreateAppointment = async (e: React.FormEvent) => {
