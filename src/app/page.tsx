@@ -7,7 +7,7 @@ export default function Home() {
       <header className={styles.header}>
           <h1 className={`${styles.title} fade-in`}>Bienvenido, Dr. Admin</h1>
           <Link href="/citas?new=true">
-            <button className="btn btn-primary">
+            <button className="btn btn-soft">
               + Nueva Cita
             </button>
           </Link>

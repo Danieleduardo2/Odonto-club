@@ -76,7 +76,7 @@ export default function Citas() {
     <>
       <header className={styles.header}>
           <h1 className={`${styles.title} fade-in`}>Control de Citas</h1>
-          <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+          <button className="btn btn-soft" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancelar" : "+ Nueva Cita"}
           </button>
         </header>

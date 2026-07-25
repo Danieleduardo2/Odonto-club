@@ -56,7 +56,7 @@ export default function Pacientes() {
     <>
       <header className={styles.header}>
           <h1 className={`${styles.title} fade-in`}>Directorio de Pacientes</h1>
-          <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+          <button className="btn btn-soft" onClick={() => setShowForm(!showForm)}>
             {showForm ? "Cancelar" : "+ Nuevo Paciente"}
           </button>
         </header>

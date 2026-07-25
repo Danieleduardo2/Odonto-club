@@ -10,8 +10,11 @@ export default function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
-        <span className={styles.logoIcon}><Stethoscope size={24} color="#0d6efd" /></span>
-        <span className={styles.logoText}>OdontoClub</span>
+        <span className={styles.logoIcon}><Stethoscope size={32} /></span>
+        <div className={styles.logoText}>
+          e-Sheba
+          <span>DENTAL CLINIC</span>
+        </div>
       </div>
       
       <nav className={styles.nav}>

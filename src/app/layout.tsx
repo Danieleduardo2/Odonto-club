@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Sidebar from "@/components/Sidebar";
+import TopBar from "@/components/TopBar";
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] });
 
@@ -39,8 +40,11 @@ export default function RootLayout({
         />
         <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-page)' }}>
           <Sidebar />
-          <div style={{ flex: 1, padding: '2rem 3rem', overflowY: 'auto' }}>
-            {children}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+            <TopBar />
+            <div style={{ flex: 1, padding: '2rem 3rem', overflowY: 'auto' }}>
+              {children}
+            </div>
           </div>
         </div>
       </body>
