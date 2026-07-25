@@ -3,6 +3,7 @@
 import styles from "../page.module.css";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Pacientes() {
   const [pacientes, setPacientes] = useState<any[]>([]);
@@ -59,9 +60,9 @@ export default function Pacientes() {
         </div>
         
         <nav className={styles.nav}>
-          <a href="/" className={styles.navItem}>Dashboard</a>
-          <a href="/pacientes" className={`${styles.navItem} ${styles.navItemActive}`}>Pacientes</a>
-          <a href="/citas" className={styles.navItem}>Citas</a>
+          <Link href="/" className={styles.navItem}>Dashboard</Link>
+          <Link href="/pacientes" className={`${styles.navItem} ${styles.navItemActive}`}>Pacientes</Link>
+          <Link href="/citas" className={styles.navItem}>Citas</Link>
         </nav>
       </aside>
 

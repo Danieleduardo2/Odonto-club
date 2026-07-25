@@ -1,41 +1,68 @@
 "use client";
 
 import styles from "../page.module.css";
+import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 export default function Citas() {
   const [citas, setCitas] = useState<any[]>([]);
+  const [pacientes, setPacientes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  
+  // Form state
+  const [patientId, setPatientId] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [reason, setReason] = useState("");
+
+  const fetchData = async () => {
+    setLoading(true);
+    // Fetch citas con información del paciente
+    const { data: citasData } = await supabase
+      .from('appointments')
+      .select('*, patients(first_name, last_name)')
+      .order('appointment_date', { ascending: true });
+    
+    if (citasData) setCitas(citasData);
+
+    // Fetch pacientes para el select del formulario
+    const { data: pacientesData } = await supabase
+      .from('patients')
+      .select('id, first_name, last_name')
+      .order('first_name', { ascending: true });
+      
+    if (pacientesData) setPacientes(pacientesData);
+    
+    setLoading(false);
+  };
 
   useEffect(() => {
-    fetch('/api/appointments')
-      .then(res => res.json())
-      .then(data => {
-        if (!data.error) setCitas(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    fetchData();
   }, []);
 
-  const sendWhatsAppReminder = async (cita: any) => {
-    alert(`Enviando lista de turnos por WhatsApp a ${cita.patients?.first_name}...`);
-    // Example call to our sender API
-    const res = await fetch('/api/whatsapp/send', {
+  const handleCreateAppointment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await fetch('/api/appointments', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        to_phone_number: cita.patients?.phone_number,
-        patient_name: cita.patients?.first_name,
-        available_slots: [
-          { date: "Mañana", time: "10:00 AM" },
-          { date: "Mañana", time: "11:30 AM" },
-          { date: "Pasado Mañana", time: "09:00 AM" }
-        ]
+        patient_id: patientId,
+        appointment_date: date,
+        appointment_time: time,
+        reason: reason
       })
     });
     
-    if (res.ok) alert('Mensaje de WhatsApp enviado correctamente');
-    else alert('Error enviando el mensaje. Verifica las variables de entorno de Meta API.');
+    if (res.ok) {
+      alert("Cita programada exitosamente");
+      setShowForm(false);
+      fetchData(); // Reload list
+      setPatientId(""); setDate(""); setTime(""); setReason("");
+    } else {
+      alert("Error al programar cita");
+    }
   };
 
   return (
@@ -47,53 +74,83 @@ export default function Citas() {
         </div>
         
         <nav className={styles.nav}>
-          <a href="/" className={styles.navItem}>Dashboard</a>
-          <a href="/pacientes" className={styles.navItem}>Pacientes</a>
-          <a href="/citas" className={`${styles.navItem} ${styles.navItemActive}`}>Citas</a>
+          <Link href="/" className={styles.navItem}>Dashboard</Link>
+          <Link href="/pacientes" className={styles.navItem}>Pacientes</Link>
+          <Link href="/citas" className={`${styles.navItem} ${styles.navItemActive}`}>Citas</Link>
         </nav>
       </aside>
 
       <main className={styles.mainContent}>
         <header className={styles.header}>
           <h1 className={`${styles.title} fade-in`}>Control de Citas</h1>
-          <button className="btn btn-primary">+ Agendar Cita</button>
+          <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+            {showForm ? "Cancelar" : "+ Nueva Cita"}
+          </button>
         </header>
+
+        {showForm && (
+          <div className="glass-panel fade-in" style={{ padding: '2rem', marginBottom: '2rem', borderRadius: 'var(--radius-lg)' }}>
+            <h2 style={{ marginBottom: '1rem' }}>Programar Nueva Cita</h2>
+            <form onSubmit={handleCreateAppointment} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              
+              <select required value={patientId} onChange={e => setPatientId(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+                <option value="">Seleccione un paciente...</option>
+                {pacientes.map(p => (
+                  <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>
+                ))}
+              </select>
+
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <input type="date" required value={date} onChange={e => setDate(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
+                <input type="time" required value={time} onChange={e => setTime(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
+              </div>
+              
+              <input type="text" placeholder="Motivo de consulta (Ej: Limpieza dental)" required value={reason} onChange={e => setReason(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} />
+              
+              <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>Guardar Cita</button>
+            </form>
+          </div>
+        )}
 
         <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '200ms' }}>
           <div className="glass-panel" style={{ padding: '1rem', borderRadius: 'var(--radius-md)' }}>
             <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                  <th style={{ padding: '1rem' }}>Fecha y Hora</th>
                   <th style={{ padding: '1rem' }}>Paciente</th>
+                  <th style={{ padding: '1rem' }}>Fecha</th>
+                  <th style={{ padding: '1rem' }}>Hora</th>
+                  <th style={{ padding: '1rem' }}>Motivo</th>
                   <th style={{ padding: '1rem' }}>Estado</th>
-                  <th style={{ padding: '1rem' }}>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={4} style={{ padding: '1rem', textAlign: 'center' }}>Cargando citas...</td></tr>
+                  <tr><td colSpan={5} style={{ padding: '1rem', textAlign: 'center' }}>Cargando citas...</td></tr>
                 ) : citas && citas.length > 0 ? (
-                  citas.map((cita) => (
-                    <tr key={cita.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '1rem' }}>{cita.appointment_date} {cita.appointment_time}</td>
-                      <td style={{ padding: '1rem' }}>{cita.patients?.first_name} {cita.patients?.last_name}</td>
+                  citas.map((c) => (
+                    <tr key={c.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                      <td style={{ padding: '1rem' }}>{c.patients?.first_name} {c.patients?.last_name}</td>
+                      <td style={{ padding: '1rem' }}>{c.appointment_date}</td>
+                      <td style={{ padding: '1rem' }}>{c.appointment_time}</td>
+                      <td style={{ padding: '1rem' }}>{c.reason}</td>
                       <td style={{ padding: '1rem' }}>
-                        <span style={{ padding: '0.25rem 0.5rem', backgroundColor: 'var(--primary-100)', color: 'var(--primary-900)', borderRadius: 'var(--radius-full)', fontSize: '0.8rem' }}>
-                          {cita.status}
+                        <span style={{ 
+                          padding: '0.25rem 0.75rem', 
+                          borderRadius: '999px', 
+                          fontSize: '0.875rem',
+                          backgroundColor: c.status === 'pending' ? 'rgba(255,193,7,0.2)' : 'rgba(76,175,80,0.2)',
+                          color: c.status === 'pending' ? '#ff9800' : '#4caf50'
+                        }}>
+                          {c.status === 'pending' ? 'Pendiente' : 'Agendada'}
                         </span>
-                      </td>
-                      <td style={{ padding: '1rem' }}>
-                        <button onClick={() => sendWhatsAppReminder(cita)} className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}>
-                          📲 Enviar Opciones WPP
-                        </button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                      No hay citas registradas.
+                    <td colSpan={5} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      No hay citas registradas aún.
                     </td>
                   </tr>
                 )}

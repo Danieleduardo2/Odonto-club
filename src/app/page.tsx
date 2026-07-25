@@ -1,4 +1,5 @@
 import styles from "./page.module.css";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -11,10 +12,10 @@ export default function Home() {
         </div>
         
         <nav className={styles.nav}>
-          <a href="#" className={`${styles.navItem} ${styles.navItemActive}`}>Dashboard</a>
-          <a href="#" className={styles.navItem}>Pacientes</a>
-          <a href="#" className={styles.navItem}>Citas</a>
-          <a href="#" className={styles.navItem}>WhatsApp Config</a>
+          <Link href="/" className={`${styles.navItem} ${styles.navItemActive}`}>Dashboard</Link>
+          <Link href="/pacientes" className={styles.navItem}>Pacientes</Link>
+          <Link href="/citas" className={styles.navItem}>Citas</Link>
+          <Link href="/configuracion" className={styles.navItem}>WhatsApp Config</Link>
         </nav>
       </aside>
 
@@ -22,9 +23,11 @@ export default function Home() {
       <main className={styles.mainContent}>
         <header className={styles.header}>
           <h1 className={`${styles.title} fade-in`}>Bienvenido, Dr. Admin</h1>
-          <button className="btn btn-primary">
-            + Nueva Cita
-          </button>
+          <Link href="/citas">
+            <button className="btn btn-primary">
+              + Nueva Cita
+            </button>
+          </Link>
         </header>
 
         {/* Stats */}
