@@ -4,6 +4,7 @@ import styles from "../page.module.css";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 export default function Pacientes() {
   const [pacientes, setPacientes] = useState<any[]>([]);
@@ -42,12 +43,12 @@ export default function Pacientes() {
     });
     
     if (res.ok) {
-      alert("Paciente creado exitosamente");
+      toast.success("Paciente registrado correctamente");
       setShowForm(false);
       fetchPacientes(); // Reload list
       setFirstName(""); setLastName(""); setPhone(""); setEmail("");
     } else {
-      alert("Error al crear paciente");
+      toast.error("Error al registrar paciente");
     }
   };
 

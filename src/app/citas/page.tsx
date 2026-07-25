@@ -4,6 +4,7 @@ import styles from "../page.module.css";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { toast } from "react-hot-toast";
 
 export default function Citas() {
   const [citas, setCitas] = useState<any[]>([]);
@@ -62,12 +63,12 @@ export default function Citas() {
     });
     
     if (res.ok) {
-      alert("Cita programada exitosamente");
+      toast.success("Cita programada correctamente");
       setShowForm(false);
       fetchData(); // Reload list
       setPatientId(""); setDate(""); setTime(""); setReason("");
     } else {
-      alert("Error al programar cita");
+      toast.error("Error al programar cita");
     }
   };
 
