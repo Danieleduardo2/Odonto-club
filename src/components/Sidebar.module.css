@@ -1,5 +1,5 @@
 .sidebar {
-  width: 110px;
+  width: 120px;
   background-color: var(--bg-sidebar);
   height: 100vh;
   padding: 1.5rem 0;
@@ -30,21 +30,23 @@
   font-weight: 700;
   font-size: 1.25rem;
   letter-spacing: 0.5px;
-  opacity: 1;
-  transition: opacity 0.3s ease;
+  opacity: 0;
+  transform: translateX(-15px);
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .bottomLogoContainer {
   margin-top: auto;
   display: flex;
-  justify-content: center;
-  padding: 0 1rem;
+  justify-content: flex-start;
+  padding: 0 0 0 0.5rem;
   margin-bottom: 1rem;
 }
 
 .logoIconBottom {
-  min-width: 86px;
-  height: 86px;
+  min-width: 104px;
+  height: 104px;
   display: flex;
   align-items: center;
   justify-content: center;

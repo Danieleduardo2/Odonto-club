@@ -38,7 +38,7 @@ export default function Sidebar() {
 
       <div className={styles.bottomLogoContainer} style={{ marginTop: 'auto' }}>
         <div className={styles.logoIconBottom}>
-          <Image src="/logo.png" alt="OdontoClub Logo" width={64} height={64} style={{ objectFit: 'contain' }} />
+          <Image src="/logo.png" alt="OdontoClub Logo" width={104} height={104} style={{ objectFit: 'contain' }} />
         </div>
       </div>
     </aside>
