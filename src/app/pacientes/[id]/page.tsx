@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import TagSelector from "@/components/TagSelector";
 
 export default function PatientProfile({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -15,10 +16,10 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
   const [saving, setSaving] = useState(false);
 
   // Form states for clinical history
-  const [alergias, setAlergias] = useState("");
+  const [alergias, setAlergias] = useState<string[]>([]);
   const [medicacion, setMedicacion] = useState("");
-  const [enfermedades, setEnfermedades] = useState("");
-  const [habitos, setHabitos] = useState("");
+  const [enfermedades, setEnfermedades] = useState<string[]>([]);
+  const [habitos, setHabitos] = useState<string[]>([]);
   const [notas, setNotas] = useState("");
 
   const fetchData = async () => {
@@ -31,10 +32,10 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
     const { data: hData } = await supabase.from('historia_clinica').select('*').eq('paciente_id', resolvedParams.id).single();
     if (hData) {
       setHistoria(hData);
-      setAlergias(hData.alergias || "");
+      setAlergias(hData.alergias ? hData.alergias.split(',').map((s: string) => s.trim()).filter(Boolean) : []);
       setMedicacion(hData.medicacion_actual || "");
-      setEnfermedades(hData.enfermedades_sistemicas || "");
-      setHabitos(hData.habitos || "");
+      setEnfermedades(hData.enfermedades_sistemicas ? hData.enfermedades_sistemicas.split(',').map((s: string) => s.trim()).filter(Boolean) : []);
+      setHabitos(hData.habitos ? hData.habitos.split(',').map((s: string) => s.trim()).filter(Boolean) : []);
       setNotas(hData.notas_generales || "");
     }
     setLoading(false);
@@ -52,10 +53,10 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
     
     const payload = {
       paciente_id: resolvedParams.id,
-      alergias,
+      alergias: alergias.join(', '),
       medicacion_actual: medicacion,
-      enfermedades_sistemicas: enfermedades,
-      habitos,
+      enfermedades_sistemicas: enfermedades.join(', '),
+      habitos: habitos.join(', '),
       notas_generales: notas,
       updated_at: new Date()
     };
@@ -137,25 +138,22 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
         <div className="card fade-in" style={{ padding: '2rem' }}>
           <form onSubmit={handleSaveHistoria} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: '#dc2626' }}>Alergias (Importante)</label>
-              <textarea 
-                value={alergias} 
-                onChange={e => setAlergias(e.target.value)} 
-                placeholder="Ej: Penicilina, Látex..."
-                style={{ width: '100%', minHeight: '80px', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} 
-              />
-            </div>
+            <TagSelector 
+              label="Alergias (Importante)"
+              predefinedOptions={["Penicilina", "Látex", "Anestésicos locales", "Aspirina", "Ibuprofeno", "Sulfa"]}
+              selectedTags={alergias}
+              onChange={setAlergias}
+              placeholder="Escribe otra alergia y presiona Enter..."
+              important={true}
+            />
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Enfermedades Sistémicas</label>
-              <textarea 
-                value={enfermedades} 
-                onChange={e => setEnfermedades(e.target.value)} 
-                placeholder="Ej: Hipertensión, Diabetes..."
-                style={{ width: '100%', minHeight: '80px', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} 
-              />
-            </div>
+            <TagSelector 
+              label="Enfermedades Sistémicas"
+              predefinedOptions={["Hipertensión", "Diabetes", "Asma", "Problemas de Coagulación", "Embarazo", "Enfermedad Cardíaca"]}
+              selectedTags={enfermedades}
+              onChange={setEnfermedades}
+              placeholder="Escribe otra enfermedad y presiona Enter..."
+            />
 
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Medicación Actual</label>
@@ -163,18 +161,17 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
                 value={medicacion} 
                 onChange={e => setMedicacion(e.target.value)} 
                 style={{ width: '100%', minHeight: '80px', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} 
+                placeholder="Medicamentos que toma actualmente..."
               />
             </div>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Hábitos Relevantes</label>
-              <textarea 
-                value={habitos} 
-                onChange={e => setHabitos(e.target.value)} 
-                placeholder="Ej: Tabaquismo, Bruxismo..."
-                style={{ width: '100%', minHeight: '60px', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} 
-              />
-            </div>
+            <TagSelector 
+              label="Hábitos Relevantes"
+              predefinedOptions={["Tabaquismo", "Bruxismo", "Respirador Bucal", "Consumo de Alcohol", "Morderse las Uñas"]}
+              selectedTags={habitos}
+              onChange={setHabitos}
+              placeholder="Escribe otro hábito y presiona Enter..."
+            />
 
             <div>
               <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Notas Generales</label>
