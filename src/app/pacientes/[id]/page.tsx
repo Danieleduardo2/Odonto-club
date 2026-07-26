@@ -98,11 +98,20 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
       if (res.error) {
         toast.error("Error al guardar el odontograma");
         console.error(res.error);
-      } else {
-        toast.success("Odontograma actualizado");
       }
     } else {
-      toast.error("Guarda primero la historia clínica base");
+      // If there is no clinical history row yet (e.g. legacy patients), create it automatically
+      const res = await supabase.from('historia_clinica').insert([{
+        paciente_id: resolvedParams.id,
+        odontograma_estado: newState
+      }]).select().single();
+      
+      if (res.error) {
+        toast.error("Error al guardar el odontograma");
+        console.error(res.error);
+      } else if (res.data) {
+        setHistoria(res.data);
+      }
     }
   };
 
@@ -229,13 +238,8 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
           <Odontograma 
             initialState={odontograma} 
             onChange={handleOdontogramaChange} 
-            readOnly={!historia?.id} 
+            readOnly={false} 
           />
-          {!historia?.id && (
-            <p style={{ color: '#dc2626', marginTop: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>
-              Debes completar y guardar la Historia Clínica (pestaña anterior) para activar el Odontograma.
-            </p>
-          )}
         </div>
       )}
     </div>
