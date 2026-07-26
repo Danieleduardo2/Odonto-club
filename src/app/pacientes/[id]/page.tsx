@@ -6,13 +6,14 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import TagSelector from "@/components/TagSelector";
+import Odontograma, { OdontogramaState } from "@/components/Odontograma";
 
 export default function PatientProfile({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [patient, setPatient] = useState<any>(null);
   const [historia, setHistoria] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("historia");
+  const [activeTab, setActiveTab] = useState("resumen");
   const [saving, setSaving] = useState(false);
 
   // Form states for clinical history
@@ -21,6 +22,9 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
   const [enfermedades, setEnfermedades] = useState<string[]>([]);
   const [habitos, setHabitos] = useState<string[]>([]);
   const [notas, setNotas] = useState("");
+  
+  // Odontograma state
+  const [odontograma, setOdontograma] = useState<OdontogramaState>({});
 
   const fetchData = async () => {
     setLoading(true);
@@ -37,6 +41,9 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
       setEnfermedades(hData.enfermedades_sistemicas ? hData.enfermedades_sistemicas.split(',').map((s: string) => s.trim()).filter(Boolean) : []);
       setHabitos(hData.habitos ? hData.habitos.split(',').map((s: string) => s.trim()).filter(Boolean) : []);
       setNotas(hData.notas_generales || "");
+      if (hData.odontograma_estado) {
+        setOdontograma(hData.odontograma_estado);
+      }
     }
     setLoading(false);
   };
@@ -80,6 +87,25 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
     setSaving(false);
   };
 
+  const handleOdontogramaChange = async (newState: OdontogramaState) => {
+    setOdontograma(newState); // Optimistic UI update
+    
+    if (historia?.id) {
+      const res = await supabase.from('historia_clinica').update({
+        odontograma_estado: newState
+      }).eq('id', historia.id);
+      
+      if (res.error) {
+        toast.error("Error al guardar el odontograma");
+        console.error(res.error);
+      } else {
+        toast.success("Odontograma actualizado");
+      }
+    } else {
+      toast.error("Guarda primero la historia clínica base");
+    }
+  };
+
   if (loading) return <div style={{ padding: '2rem' }}>Cargando ficha del paciente...</div>;
   if (!patient) return <div style={{ padding: '2rem' }}>Paciente no encontrado.</div>;
 
@@ -106,6 +132,11 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
           onClick={() => setActiveTab('historia')}
           style={{ padding: '1rem', background: 'none', border: 'none', borderBottom: activeTab === 'historia' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'historia' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: activeTab === 'historia' ? 600 : 400, cursor: 'pointer' }}>
           Historia Clínica
+        </button>
+        <button 
+          onClick={() => setActiveTab('odontograma')}
+          style={{ padding: '1rem', background: 'none', border: 'none', borderBottom: activeTab === 'odontograma' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'odontograma' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: activeTab === 'odontograma' ? 600 : 400, cursor: 'pointer' }}>
+          Odontograma
         </button>
       </div>
 
@@ -186,6 +217,25 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
               {saving ? "Guardando..." : "Guardar Historia Clínica"}
             </button>
           </form>
+        </div>
+      )}
+
+      {activeTab === 'odontograma' && (
+        <div className="card fade-in" style={{ padding: '2rem', overflowX: 'auto' }}>
+          <h3 style={{ marginBottom: '1.5rem', color: 'var(--text-main)' }}>Odontograma Dental</h3>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', fontSize: '0.9rem' }}>
+            Haz clic en cualquier pieza dental para marcar su estado. Los cambios se guardan automáticamente.
+          </p>
+          <Odontograma 
+            initialState={odontograma} 
+            onChange={handleOdontogramaChange} 
+            readOnly={!historia?.id} 
+          />
+          {!historia?.id && (
+            <p style={{ color: '#dc2626', marginTop: '1rem', fontSize: '0.9rem', textAlign: 'center' }}>
+              Debes completar y guardar la Historia Clínica (pestaña anterior) para activar el Odontograma.
+            </p>
+          )}
         </div>
       )}
     </div>
