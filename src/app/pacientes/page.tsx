@@ -91,8 +91,14 @@ export default function Pacientes() {
                   <tr><td colSpan={3} style={{ padding: '1rem', textAlign: 'center' }}>Cargando pacientes...</td></tr>
                 ) : pacientes && pacientes.length > 0 ? (
                   pacientes.map((p) => (
-                    <tr key={p.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '1rem' }}>{p.first_name} {p.last_name}</td>
+                    <tr 
+                      key={p.id} 
+                      onClick={() => window.location.href = `/pacientes/${p.id}`}
+                      style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', transition: 'background-color 0.2s' }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                    >
+                      <td style={{ padding: '1rem', color: 'var(--primary)', fontWeight: 500 }}>{p.first_name} {p.last_name}</td>
                       <td style={{ padding: '1rem' }}>{p.phone_number}</td>
                       <td style={{ padding: '1rem' }}>{p.email}</td>
                     </tr>
