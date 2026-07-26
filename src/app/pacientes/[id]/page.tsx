@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export default function PatientProfile({ params }: { params: { id: string } }) {
+export default function PatientProfile({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const [patient, setPatient] = useState<any>(null);
   const [historia, setHistoria] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -23,11 +24,11 @@ export default function PatientProfile({ params }: { params: { id: string } }) {
   const fetchData = async () => {
     setLoading(true);
     // Fetch patient
-    const { data: pData } = await supabase.from('patients').select('*').eq('id', params.id).single();
+    const { data: pData } = await supabase.from('patients').select('*').eq('id', resolvedParams.id).single();
     if (pData) setPatient(pData);
 
     // Fetch historia clinica
-    const { data: hData } = await supabase.from('historia_clinica').select('*').eq('paciente_id', params.id).single();
+    const { data: hData } = await supabase.from('historia_clinica').select('*').eq('paciente_id', resolvedParams.id).single();
     if (hData) {
       setHistoria(hData);
       setAlergias(hData.alergias || "");
@@ -40,17 +41,17 @@ export default function PatientProfile({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
-    if (params.id) {
+    if (resolvedParams.id) {
       fetchData();
     }
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   const handleSaveHistoria = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     
     const payload = {
-      paciente_id: params.id,
+      paciente_id: resolvedParams.id,
       alergias,
       medicacion_actual: medicacion,
       enfermedades_sistemicas: enfermedades,
