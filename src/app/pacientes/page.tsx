@@ -5,13 +5,17 @@ import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
+import TagSelector from "@/components/TagSelector";
 
 export default function Pacientes() {
   const [pacientes, setPacientes] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
   
-  // Form state
+  // view can be 'list', 'register-step1', 'register-step2'
+  const [view, setView] = useState<'list' | 'register-step1' | 'register-step2'>('list');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Step 1: Form state (Personal)
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -20,6 +24,13 @@ export default function Pacientes() {
   const [direccion, setDireccion] = useState("");
   const [emergencia, setEmergencia] = useState("");
   const [obraSocial, setObraSocial] = useState("");
+
+  // Step 2: Form state (Clinical History)
+  const [alergias, setAlergias] = useState<string[]>([]);
+  const [medicacion, setMedicacion] = useState("");
+  const [enfermedades, setEnfermedades] = useState<string[]>([]);
+  const [habitos, setHabitos] = useState<string[]>([]);
+  const [notas, setNotas] = useState("");
 
   const fetchPacientes = async () => {
     setLoading(true);
@@ -32,8 +43,14 @@ export default function Pacientes() {
     fetchPacientes();
   }, []);
 
+  const handleNextStep = (e: React.FormEvent) => {
+    e.preventDefault();
+    setView('register-step2');
+  };
+
   const handleCreatePatient = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const res = await fetch('/api/patients', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,40 +63,99 @@ export default function Pacientes() {
         direccion: direccion || null,
         contacto_emergencia: emergencia || null,
         obra_social: obraSocial || null,
-        notes: ""
+        notes: "",
+        alergias: alergias.join(', '),
+        enfermedades_sistemicas: enfermedades.join(', '),
+        habitos: habitos.join(', '),
+        medicacion_actual: medicacion,
+        notas_generales: notas
       })
     });
     
     if (res.ok) {
-      toast.success("Paciente registrado correctamente");
-      setShowForm(false);
+      toast.success("Paciente y su Historia Clínica registrados correctamente");
+      setView('list');
       fetchPacientes(); // Reload list
+      
+      // Reset forms
       setFirstName(""); setLastName(""); setPhone(""); setEmail(""); setDob(""); setDireccion(""); setEmergencia(""); setObraSocial("");
+      setAlergias([]); setEnfermedades([]); setHabitos([]); setMedicacion(""); setNotas("");
     } else {
       toast.error("Error al registrar paciente");
     }
+    setIsSubmitting(false);
   };
 
   return (
     <>
-      <header className={styles.header}>
-          <h1 className={`${styles.title} fade-in`}>Directorio de Pacientes</h1>
-          <button className="btn btn-soft" onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancelar" : "+ Nuevo Paciente"}
-          </button>
-        </header>
+      {view === 'list' && (
+        <>
+          <header className={styles.header}>
+            <h2 className={`${styles.title} fade-in`} style={{ fontSize: '1.5rem' }}>Directorio de Pacientes</h2>
+            <button className="btn btn-soft" onClick={() => setView('register-step1')}>
+              + Nuevo Paciente
+            </button>
+          </header>
+          
+          <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '200ms' }}>
+            <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
+              <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+                <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
+                  <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                    <th style={{ padding: '1rem' }}>Nombre</th>
+                    <th style={{ padding: '1rem' }}>Teléfono</th>
+                    <th style={{ padding: '1rem' }}>Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan={3} style={{ padding: '1rem', textAlign: 'center' }}>Cargando pacientes...</td></tr>
+                  ) : pacientes && pacientes.length > 0 ? (
+                    pacientes.map((p) => (
+                      <tr 
+                        key={p.id} 
+                        onClick={() => window.location.href = `/pacientes/${p.id}`}
+                        style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', transition: 'background-color 0.2s' }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                      >
+                        <td style={{ padding: '1rem', color: 'var(--primary)', fontWeight: 500 }}>{p.first_name} {p.last_name}</td>
+                        <td style={{ padding: '1rem' }}>{p.phone_number}</td>
+                        <td style={{ padding: '1rem' }}>{p.email}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={3} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+                        No hay pacientes registrados aún.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
 
-        {showForm && (
-          <div className="card fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
-            <h2 style={{ marginBottom: '1rem', color: 'var(--text-main)' }}>Registrar Nuevo Paciente</h2>
-            <form onSubmit={handleCreatePatient} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {view === 'register-step1' && (
+        <div className="fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <header className={styles.header} style={{ marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.25rem', color: 'var(--text-main)', margin: 0 }}>Registrar Nuevo Paciente (Paso 1: Datos Personales)</h2>
+            <button className="btn btn-soft" onClick={() => setView('list')} style={{ background: 'transparent', border: '1px solid var(--border)' }}>
+              Cancelar
+            </button>
+          </header>
+
+          <div className="card" style={{ padding: '2rem' }}>
+            <form onSubmit={handleNextStep} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <input type="text" placeholder="Nombre" required value={firstName} onChange={e => setFirstName(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
                 <input type="text" placeholder="Apellido" required value={lastName} onChange={e => setLastName(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <input type="text" placeholder="Teléfono (Ej: +573001234567)" required value={phone} onChange={e => setPhone(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
-                <input type="email" placeholder="Correo Electrónico" value={email} onChange={e => setEmail(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
+                <input type="email" placeholder="Correo Electrónico (Opcional)" value={email} onChange={e => setEmail(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
               </div>
               <div style={{ display: 'flex', gap: '1rem' }}>
                 <div style={{ flex: 1 }}>
@@ -95,49 +171,71 @@ export default function Pacientes() {
                 <input type="text" placeholder="Dirección" value={direccion} onChange={e => setDireccion(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
                 <input type="text" placeholder="Obra Social / Seguro (Opcional)" value={obraSocial} onChange={e => setObraSocial(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
               </div>
-              <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>Guardar Paciente</button>
+              
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                <button type="submit" className="btn btn-primary">Siguiente: Historia Clínica &rarr;</button>
+              </div>
             </form>
           </div>
-        )}
+        </div>
+      )}
 
-        <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '200ms' }}>
-          <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
-            <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-              <thead style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid var(--border)' }}>
-                <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                  <th style={{ padding: '1rem' }}>Nombre</th>
-                  <th style={{ padding: '1rem' }}>Teléfono</th>
-                  <th style={{ padding: '1rem' }}>Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={3} style={{ padding: '1rem', textAlign: 'center' }}>Cargando pacientes...</td></tr>
-                ) : pacientes && pacientes.length > 0 ? (
-                  pacientes.map((p) => (
-                    <tr 
-                      key={p.id} 
-                      onClick={() => window.location.href = `/pacientes/${p.id}`}
-                      style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', transition: 'background-color 0.2s' }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f8fafc'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                      <td style={{ padding: '1rem', color: 'var(--primary)', fontWeight: 500 }}>{p.first_name} {p.last_name}</td>
-                      <td style={{ padding: '1rem' }}>{p.phone_number}</td>
-                      <td style={{ padding: '1rem' }}>{p.email}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={3} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                      No hay pacientes registrados aún.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+      {view === 'register-step2' && (
+        <div className="fade-in" style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <header className={styles.header} style={{ marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '1.25rem', color: 'var(--text-main)', margin: 0 }}>Registrar Nuevo Paciente (Paso 2: Historia Clínica)</h2>
+            <button className="btn btn-soft" onClick={() => setView('register-step1')} style={{ background: 'transparent', border: '1px solid var(--border)' }}>
+              &larr; Atrás
+            </button>
+          </header>
+
+          <div className="card fade-in" style={{ padding: '2rem' }}>
+            <form onSubmit={handleCreatePatient} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              
+              <TagSelector 
+                label="Alergias (Importante)"
+                predefinedOptions={["Penicilina", "Látex", "Anestésicos locales", "Aspirina", "Ibuprofeno", "Sulfa"]}
+                selectedTags={alergias}
+                onChange={setAlergias}
+                placeholder="Escribe otra alergia y presiona Enter..."
+                important={true}
+              />
+
+              <TagSelector 
+                label="Enfermedades Sistémicas"
+                predefinedOptions={["Hipertensión", "Diabetes", "Asma", "Problemas de Coagulación", "Embarazo", "Enfermedad Cardíaca"]}
+                selectedTags={enfermedades}
+                onChange={setEnfermedades}
+                placeholder="Escribe otra enfermedad y presiona Enter..."
+              />
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Medicación Actual</label>
+                <textarea 
+                  value={medicacion} 
+                  onChange={e => setMedicacion(e.target.value)} 
+                  style={{ width: '100%', minHeight: '80px', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} 
+                  placeholder="Medicamentos que toma actualmente..."
+                />
+              </div>
+
+              <TagSelector 
+                label="Hábitos Relevantes"
+                predefinedOptions={["Tabaquismo", "Bruxismo", "Respirador Bucal", "Consumo de Alcohol", "Morderse las Uñas"]}
+                selectedTags={habitos}
+                onChange={setHabitos}
+                placeholder="Escribe otro hábito y presiona Enter..."
+              />
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '1rem' }}>
+                <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
+                  {isSubmitting ? "Guardando..." : "Finalizar y Guardar Paciente"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
+      )}
     </>
   );
 }
