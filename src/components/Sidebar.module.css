@@ -28,19 +28,21 @@
 }
 
 .logoIcon {
-  color: white;
   min-width: 42px;
   height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 1rem;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .logoText {
   color: white;
-  font-weight: 600;
-  font-size: 1.25rem;
+  font-weight: 700;
+  font-size: 1.15rem;
+  letter-spacing: 1px;
   opacity: 0;
   transform: translateX(-15px);
   transition: all 0.3s ease;
@@ -49,9 +51,11 @@
 
 .logoText span {
   font-weight: 300;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   display: block;
   opacity: 0.8;
+  letter-spacing: 0px;
+  margin-top: -2px;
 }
 
 .sidebar:hover .logoText {
@@ -75,17 +79,32 @@
   text-decoration: none;
   min-width: 230px;
   transition: all 0.2s ease;
+  background: transparent;
 }
 
 .navItem:hover {
   color: white;
 }
 
-/* Reference style: Light blue background, dark text for active */
+/* Collapsed state: no background, distinct icon color */
 .active {
+  background: transparent;
+  color: white;
+}
+
+.active .icon {
+  color: #A5D6E6; /* Light blue to stand out when collapsed */
+}
+
+/* Expanded state: light blue background, dark text/icon */
+.sidebar:hover .active {
   background: #A5D6E6;
   color: #0f2c49 !important;
   font-weight: 600;
+}
+
+.sidebar:hover .active .icon {
+  color: #0f2c49;
 }
 
 .icon {
