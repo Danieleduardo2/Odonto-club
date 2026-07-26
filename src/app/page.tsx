@@ -13,22 +13,6 @@ export default function Home() {
           </Link>
         </header>
 
-        {/* Stats */}
-        <div className={styles.statsGrid}>
-          <div className={`${styles.statCard} card fade-in`} style={{ animationDelay: '100ms' }}>
-            <div className={styles.statLabel}>Pacientes Totales</div>
-            <div className={styles.statValue}>1,248</div>
-          </div>
-          <div className={`${styles.statCard} card fade-in`} style={{ animationDelay: '200ms' }}>
-            <div className={styles.statLabel}>Citas Hoy</div>
-            <div className={styles.statValue}>8</div>
-          </div>
-          <div className={`${styles.statCard} card fade-in`} style={{ animationDelay: '300ms' }}>
-            <div className={styles.statLabel}>Recordatorios Enviados</div>
-            <div className={styles.statValue}>24</div>
-          </div>
-        </div>
-
         {/* Citas del dia */}
         <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '400ms' }}>
           <h2 style={{ fontSize: '1.25rem', color: 'var(--text-main)' }}>Próximas Citas</h2>
