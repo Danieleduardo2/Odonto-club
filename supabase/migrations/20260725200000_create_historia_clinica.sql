@@ -1,5 +1,5 @@
--- Update pacientes table
-ALTER TABLE public.pacientes
+-- Update patients table
+ALTER TABLE public.patients
 ADD COLUMN IF NOT EXISTS fecha_nacimiento DATE,
 ADD COLUMN IF NOT EXISTS direccion TEXT,
 ADD COLUMN IF NOT EXISTS contacto_emergencia TEXT,
@@ -8,7 +8,7 @@ ADD COLUMN IF NOT EXISTS obra_social TEXT;
 -- Create historia_clinica table
 CREATE TABLE IF NOT EXISTS public.historia_clinica (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    paciente_id UUID REFERENCES public.pacientes(id) ON DELETE CASCADE UNIQUE NOT NULL,
+    paciente_id UUID REFERENCES public.patients(id) ON DELETE CASCADE UNIQUE NOT NULL,
     alergias TEXT,
     medicacion_actual TEXT,
     enfermedades_sistemicas TEXT,
