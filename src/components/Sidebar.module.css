@@ -14,7 +14,7 @@
 }
 
 .sidebar:hover {
-  width: 260px;
+  width: 290px;
 }
 
 .logoContainer {
@@ -23,7 +23,7 @@
   padding: 0 1.5rem;
   margin-bottom: 2rem;
   padding-bottom: 2rem;
-  min-width: 260px;
+  min-width: 290px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 

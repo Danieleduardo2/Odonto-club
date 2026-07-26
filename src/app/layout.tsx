@@ -42,7 +42,7 @@ export default function RootLayout({
           <Sidebar />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
             <TopBar />
-            <div style={{ flex: 1, padding: '2rem 3rem', overflowY: 'auto' }}>
+            <div style={{ flex: 1, padding: '1.25rem 3rem', overflowY: 'auto' }}>
               {children}
             </div>
           </div>

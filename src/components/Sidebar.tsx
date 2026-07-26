@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Stethoscope, LayoutDashboard, Users, CalendarDays, Settings } from "lucide-react";
@@ -12,7 +11,7 @@ export default function Sidebar() {
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
         <div className={styles.logoIcon}>
-          <Image src="/logo.png" alt="OdontoClub Logo" width={42} height={42} style={{ objectFit: 'contain' }} />
+          <Stethoscope size={28} />
         </div>
         <div className={styles.logoText}>
           ODONTOCL<span style={{ color: '#e74c3c', display: 'inline', fontSize: 'inherit', fontWeight: 'inherit' }}>U</span>B
