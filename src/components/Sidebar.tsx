@@ -12,7 +12,7 @@ export default function Sidebar() {
     <aside className={styles.sidebar}>
       <div className={styles.logoContainer}>
         <div className={styles.logoIcon}>
-          <Image src="/logo.png" alt="OdontoClub Logo" width={42} height={42} style={{ objectFit: 'contain' }} />
+          <Image src="/logo.png" alt="OdontoClub Logo" width={64} height={64} style={{ objectFit: 'contain' }} />
         </div>
         <div className={styles.logoText}>
           ODONTOCL<span style={{ color: '#e74c3c', display: 'inline', fontSize: 'inherit', fontWeight: 'inherit' }}>U</span>B

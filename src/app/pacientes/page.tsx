@@ -16,6 +16,10 @@ export default function Pacientes() {
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [dob, setDob] = useState("");
+  const [direccion, setDireccion] = useState("");
+  const [emergencia, setEmergencia] = useState("");
+  const [obraSocial, setObraSocial] = useState("");
 
   const fetchPacientes = async () => {
     setLoading(true);
@@ -38,6 +42,10 @@ export default function Pacientes() {
         last_name: lastName,
         phone_number: phone,
         email: email,
+        fecha_nacimiento: dob || null,
+        direccion: direccion || null,
+        contacto_emergencia: emergencia || null,
+        obra_social: obraSocial || null,
         notes: ""
       })
     });
@@ -46,7 +54,7 @@ export default function Pacientes() {
       toast.success("Paciente registrado correctamente");
       setShowForm(false);
       fetchPacientes(); // Reload list
-      setFirstName(""); setLastName(""); setPhone(""); setEmail("");
+      setFirstName(""); setLastName(""); setPhone(""); setEmail(""); setDob(""); setDireccion(""); setEmergencia(""); setObraSocial("");
     } else {
       toast.error("Error al registrar paciente");
     }
@@ -69,8 +77,24 @@ export default function Pacientes() {
                 <input type="text" placeholder="Nombre" required value={firstName} onChange={e => setFirstName(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
                 <input type="text" placeholder="Apellido" required value={lastName} onChange={e => setLastName(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
               </div>
-              <input type="text" placeholder="Teléfono (Ej: +573001234567)" required value={phone} onChange={e => setPhone(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} />
-              <input type="email" placeholder="Correo Electrónico" value={email} onChange={e => setEmail(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} />
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <input type="text" placeholder="Teléfono (Ej: +573001234567)" required value={phone} onChange={e => setPhone(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
+                <input type="email" placeholder="Correo Electrónico" value={email} onChange={e => setEmail(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>Fecha de Nacimiento</label>
+                  <input type="date" value={dob} onChange={e => setDob(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>Contacto de Emergencia</label>
+                  <input type="text" placeholder="Nombre y Teléfono" value={emergencia} onChange={e => setEmergencia(e.target.value)} style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} />
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <input type="text" placeholder="Dirección" value={direccion} onChange={e => setDireccion(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
+                <input type="text" placeholder="Obra Social / Seguro (Opcional)" value={obraSocial} onChange={e => setObraSocial(e.target.value)} style={{ padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', flex: 1 }} />
+              </div>
               <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>Guardar Paciente</button>
             </form>
           </div>

@@ -17,12 +17,21 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { first_name, last_name, phone_number, email, notes } = body;
+    const { 
+      first_name, last_name, phone_number, email, notes,
+      fecha_nacimiento, direccion, contacto_emergencia, obra_social
+    } = body;
 
     const { data, error } = await supabase
       .from('patients')
       .insert([
-        { first_name, last_name, phone_number, email, notes }
+        { 
+          first_name, last_name, phone_number, email, notes,
+          fecha_nacimiento: fecha_nacimiento || null,
+          direccion: direccion || null,
+          contacto_emergencia: contacto_emergencia || null,
+          obra_social: obra_social || null
+        }
       ])
       .select()
       .single();
