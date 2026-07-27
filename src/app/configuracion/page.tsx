@@ -108,7 +108,7 @@ export default function Configuracion() {
               </div>
 
               <div>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <label style={{ marginBottom: '0.5rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <Phone size={16} /> Phone Number ID
                 </label>
                 <input 
