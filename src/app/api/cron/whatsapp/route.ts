@@ -71,8 +71,10 @@ export async function GET(request: Request) {
 
     // 3. Send WhatsApp message for each appointment
     for (const appt of appointments) {
-      // @ts-ignore
-      const patient = appt.patients;
+      // Supabase sometimes types the relation as an array depending on schema introspection
+      const patientData: any = appt.patients;
+      const patient = Array.isArray(patientData) ? patientData[0] : patientData;
+      
       if (!patient || !patient.phone_number) continue;
 
       // Format phone number (remove +, spaces, dashes)
