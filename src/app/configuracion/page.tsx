@@ -15,6 +15,9 @@ export default function Configuracion() {
   const [phoneId, setPhoneId] = useState("");
   const [templateName, setTemplateName] = useState("recordatorio_cita");
 
+  const [testPhone, setTestPhone] = useState("");
+  const [testing, setTesting] = useState(false);
+
   useEffect(() => {
     fetchSettings();
   }, []);
@@ -68,6 +71,29 @@ export default function Configuracion() {
       toast.success("Configuración de WhatsApp guardada");
     }
     setSaving(false);
+  };
+
+  const testConnection = async () => {
+    if (!testPhone) {
+      toast.error("Por favor ingresa un número para probar");
+      return;
+    }
+    setTesting(true);
+    
+    const res = await fetch('/api/test-whatsapp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: testPhone })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      toast.success("¡Mensaje de prueba enviado con éxito!");
+    } else {
+      console.error(data);
+      toast.error("Error al enviar: " + (data.error || "Revisa la consola"));
+    }
+    setTesting(false);
   };
 
   return (
@@ -149,6 +175,33 @@ export default function Configuracion() {
             </div>
             
           </form>
+
+          <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
+            <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', color: '#27ae60' }}>
+              Probar Conexión
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+              Asegúrate de que tu número esté registrado en Meta como "Destinatario de prueba" antes de enviar este mensaje.
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <input 
+                type="text" 
+                value={testPhone} 
+                onChange={e => setTestPhone(e.target.value)} 
+                style={{ flex: 1, padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }} 
+                placeholder="Tu número (Ej: 573001234567)"
+              />
+              <button 
+                type="button" 
+                onClick={testConnection} 
+                className="btn btn-soft" 
+                disabled={testing}
+                style={{ backgroundColor: '#e8f8f5', color: '#27ae60', border: '1px solid #a3e4d7' }}
+              >
+                {testing ? "Enviando..." : "Enviar Mensaje de Prueba"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </>
