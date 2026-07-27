@@ -8,12 +8,14 @@ import { ArrowLeft, CreditCard } from "lucide-react";
 import TagSelector from "@/components/TagSelector";
 import Odontograma, { OdontogramaState } from "@/components/Odontograma";
 import ConsultasTimeline from "@/components/ConsultasTimeline";
+import ImageGallery from "@/components/ImageGallery";
 
 export default function PatientProfile({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [patient, setPatient] = useState<any>(null);
   const [historia, setHistoria] = useState<any>(null);
   const [consultas, setConsultas] = useState<any[]>([]);
+  const [documentos, setDocumentos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("resumen");
   const [saving, setSaving] = useState(false);
@@ -50,8 +52,23 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
     
     // Fetch consultas
     await fetchConsultas();
+    
+    // Fetch documentos
+    await fetchDocumentos();
 
     setLoading(false);
+  };
+
+  const fetchDocumentos = async () => {
+    const { data: dData } = await supabase
+      .from('documentos_paciente')
+      .select('*')
+      .eq('paciente_id', resolvedParams.id)
+      .order('created_at', { ascending: false });
+    
+    if (dData) {
+      setDocumentos(dData);
+    }
   };
 
   const fetchConsultas = async () => {
@@ -172,6 +189,11 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
           style={{ padding: '1rem', background: 'none', border: 'none', borderBottom: activeTab === 'evolucion' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'evolucion' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: activeTab === 'evolucion' ? 600 : 400, cursor: 'pointer' }}>
           Evolución y Consultas
         </button>
+        <button 
+          onClick={() => setActiveTab('imagenes')}
+          style={{ padding: '1rem', background: 'none', border: 'none', borderBottom: activeTab === 'imagenes' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'imagenes' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: activeTab === 'imagenes' ? 600 : 400, cursor: 'pointer' }}>
+          Imágenes
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -290,6 +312,14 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
           pacienteId={resolvedParams.id}
           consultas={consultas}
           onConsultasUpdated={fetchConsultas}
+        />
+      )}
+
+      {activeTab === 'imagenes' && (
+        <ImageGallery 
+          pacienteId={resolvedParams.id}
+          documentos={documentos}
+          onDocumentosUpdated={fetchDocumentos}
         />
       )}
     </div>
