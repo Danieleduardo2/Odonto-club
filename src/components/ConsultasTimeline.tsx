@@ -34,6 +34,7 @@ export default function ConsultasTimeline({
   const [notas, setNotas] = useState("");
   const [costo, setCosto] = useState<number | "">("");
   const [pagado, setPagado] = useState<number | "">("");
+  const [proximaCita, setProximaCita] = useState<string>("none");
   
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +44,7 @@ export default function ConsultasTimeline({
     setNotas("");
     setCosto("");
     setPagado("");
+    setProximaCita("none");
     setIsAdding(false);
     setEditingId(null);
   };
@@ -74,13 +76,43 @@ export default function ConsultasTimeline({
     if (editingId) {
       res = await supabase.from('consultas_clinicas').update(payload).eq('id', editingId);
     } else {
-      res = await supabase.from('consultas_clinicas').insert([payload]);
+      // Necesitamos devolver el registro insertado para obtener su ID
+      res = await supabase.from('consultas_clinicas').insert([payload]).select();
     }
 
     if (res.error) {
       toast.error("Error al guardar la consulta");
       console.error(res.error);
     } else {
+      const consultaId = editingId ? editingId : res.data?.[0]?.id;
+      
+      // Manejar la creación de la próxima cita si se seleccionó una recurrencia
+      if (!editingId && proximaCita !== "none" && consultaId) {
+        let diasASumar = 0;
+        switch (proximaCita) {
+          case "15_dias": diasASumar = 15; break;
+          case "1_mes": diasASumar = 30; break;
+          case "2_meses": diasASumar = 60; break;
+          case "6_meses": diasASumar = 180; break;
+        }
+
+        if (diasASumar > 0) {
+          const nextDate = new Date();
+          nextDate.setDate(nextDate.getDate() + diasASumar);
+          
+          await supabase.from('appointments').insert([{
+            patient_id: pacienteId,
+            appointment_date: nextDate.toISOString().split('T')[0],
+            appointment_time: '10:00:00', // Default time, they can edit in Agenda
+            reason: motivo,
+            status: 'scheduled',
+            es_recurrente: true,
+            intervalo_recurrencia: proximaCita,
+            consulta_origen_id: consultaId
+          }]);
+        }
+      }
+
       toast.success(editingId ? "Consulta actualizada" : "Consulta registrada");
       resetForm();
       onConsultasUpdated();
@@ -168,6 +200,28 @@ export default function ConsultasTimeline({
                 />
               </div>
             </div>
+
+            {!editingId && (
+              <div style={{ background: '#eaf2f8', padding: '1.25rem', borderRadius: 'var(--radius-md)', border: '1px solid #d4e6f1' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', fontWeight: 600, color: '#2980b9' }}>
+                  <Calendar size={18} /> Agendar Próxima Cita Automáticamente
+                </label>
+                <select 
+                  value={proximaCita}
+                  onChange={e => setProximaCita(e.target.value)}
+                  style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #a9cce3', backgroundColor: 'white' }}
+                >
+                  <option value="none">❌ No agendar automáticamente</option>
+                  <option value="15_dias">🔁 Recurrente: En 15 días</option>
+                  <option value="1_mes">🔁 Recurrente: En 1 mes (Ideal Ortodoncia)</option>
+                  <option value="2_meses">🔁 Recurrente: En 2 meses</option>
+                  <option value="6_meses">🔁 Recurrente: En 6 meses (Ideal Profilaxis)</option>
+                </select>
+                <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#5499c7' }}>
+                  Esto creará una cita programada en la Agenda y el paciente recibirá recordatorios en el futuro.
+                </p>
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
               <button type="submit" className="btn btn-primary" disabled={loading}>

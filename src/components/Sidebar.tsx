@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Stethoscope, LayoutDashboard, Users, CalendarDays, Settings } from "lucide-react";
+import { Stethoscope, LayoutDashboard, Users, CalendarDays, Settings, Calendar } from "lucide-react";
 import styles from "./Sidebar.module.css";
 
 export default function Sidebar() {
@@ -34,6 +34,10 @@ export default function Sidebar() {
             </Link>
           );
         })}
+        <Link href="/agenda" className={`${styles.navItem} ${pathname.startsWith('/agenda') ? styles.active : ''}`}>
+          <span className={styles.icon}><Calendar size={20} /></span>
+          <span className={styles.text}>Agenda</span>
+        </Link>
       </nav>
 
       <div className={styles.bottomLogoContainer} style={{ marginTop: 'auto' }}>
