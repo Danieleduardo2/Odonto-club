@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "react-hot-toast";
+import { Search } from "lucide-react";
 import TagSelector from "@/components/TagSelector";
 
 export default function Pacientes() {
@@ -14,6 +15,9 @@ export default function Pacientes() {
   // view can be 'list', 'register-step1', 'register-step2'
   const [view, setView] = useState<'list' | 'register-step1' | 'register-step2'>('list');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Search state
+  const [searchTerm, setSearchTerm] = useState("");
   
   // Step 1: Form state (Personal)
   const [firstName, setFirstName] = useState("");
@@ -86,6 +90,12 @@ export default function Pacientes() {
     setIsSubmitting(false);
   };
 
+  const filteredPacientes = pacientes.filter(p => {
+    const term = searchTerm.toLowerCase();
+    const fullName = `${p.first_name} ${p.last_name}`.toLowerCase();
+    return fullName.includes(term) || (p.phone_number && p.phone_number.includes(term)) || (p.email && p.email.toLowerCase().includes(term));
+  });
+
   return (
     <>
       {view === 'list' && (
@@ -96,6 +106,27 @@ export default function Pacientes() {
               + Nuevo Paciente
             </button>
           </header>
+          
+          <div className="fade-in" style={{ marginBottom: '1.5rem', animationDelay: '100ms' }}>
+            <div style={{ position: 'relative', maxWidth: '400px' }}>
+              <Search size={20} color="var(--text-muted)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+              <input 
+                type="text" 
+                placeholder="Buscar por nombre, teléfono o email..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                style={{ 
+                  width: '100%', 
+                  padding: '0.85rem 1rem 0.85rem 2.5rem', 
+                  borderRadius: 'var(--radius-full)', 
+                  border: '1px solid var(--border)',
+                  backgroundColor: 'white',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.02)',
+                  fontSize: '0.95rem'
+                }} 
+              />
+            </div>
+          </div>
           
           <div className={`${styles.actionSection} fade-in`} style={{ animationDelay: '200ms' }}>
             <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
@@ -110,8 +141,8 @@ export default function Pacientes() {
                 <tbody>
                   {loading ? (
                     <tr><td colSpan={3} style={{ padding: '1rem', textAlign: 'center' }}>Cargando pacientes...</td></tr>
-                  ) : pacientes && pacientes.length > 0 ? (
-                    pacientes.map((p) => (
+                  ) : filteredPacientes.length > 0 ? (
+                    filteredPacientes.map((p) => (
                       <tr 
                         key={p.id} 
                         onClick={() => window.location.href = `/pacientes/${p.id}`}
@@ -127,7 +158,7 @@ export default function Pacientes() {
                   ) : (
                     <tr>
                       <td colSpan={3} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                        No hay pacientes registrados aún.
+                        {searchTerm ? "No se encontraron pacientes con esa búsqueda." : "No hay pacientes registrados aún."}
                       </td>
                     </tr>
                   )}
