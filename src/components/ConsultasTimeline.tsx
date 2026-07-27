@@ -211,11 +211,11 @@ export default function ConsultasTimeline({
                   onChange={e => setProximaCita(e.target.value)}
                   style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius-md)', border: '1px solid #a9cce3', backgroundColor: 'white' }}
                 >
-                  <option value="none">❌ No agendar automáticamente</option>
-                  <option value="15_dias">🔁 Recurrente: En 15 días</option>
-                  <option value="1_mes">🔁 Recurrente: En 1 mes (Ideal Ortodoncia)</option>
-                  <option value="2_meses">🔁 Recurrente: En 2 meses</option>
-                  <option value="6_meses">🔁 Recurrente: En 6 meses (Ideal Profilaxis)</option>
+                  <option value="none">No agendar automáticamente</option>
+                  <option value="15_dias">Recurrente: En 15 días</option>
+                  <option value="1_mes">Recurrente: En 1 mes (Ideal Ortodoncia)</option>
+                  <option value="2_meses">Recurrente: En 2 meses</option>
+                  <option value="6_meses">Recurrente: En 6 meses (Ideal Profilaxis)</option>
                 </select>
                 <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: '#5499c7' }}>
                   Esto creará una cita programada en la Agenda y el paciente recibirá recordatorios en el futuro.
