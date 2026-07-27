@@ -91,7 +91,8 @@ export default function Configuracion() {
       toast.success("¡Mensaje de prueba enviado con éxito!");
     } else {
       console.error(data);
-      toast.error("Error al enviar: " + (data.error || "Revisa la consola"));
+      const metaError = data.details?.error?.message || data.error;
+      toast.error("Meta API: " + metaError, { duration: 6000 });
     }
     setTesting(false);
   };
