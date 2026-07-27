@@ -4,14 +4,16 @@ import { useEffect, useState, use } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CreditCard } from "lucide-react";
 import TagSelector from "@/components/TagSelector";
 import Odontograma, { OdontogramaState } from "@/components/Odontograma";
+import ConsultasTimeline from "@/components/ConsultasTimeline";
 
 export default function PatientProfile({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [patient, setPatient] = useState<any>(null);
   const [historia, setHistoria] = useState<any>(null);
+  const [consultas, setConsultas] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("resumen");
   const [saving, setSaving] = useState(false);
@@ -45,7 +47,23 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
         setOdontograma(hData.odontograma_estado);
       }
     }
+    
+    // Fetch consultas
+    await fetchConsultas();
+
     setLoading(false);
+  };
+
+  const fetchConsultas = async () => {
+    const { data: cData } = await supabase
+      .from('consultas_clinicas')
+      .select('*')
+      .eq('paciente_id', resolvedParams.id)
+      .order('fecha', { ascending: false });
+    
+    if (cData) {
+      setConsultas(cData);
+    }
   };
 
   useEffect(() => {
@@ -118,6 +136,8 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
   if (loading) return <div style={{ padding: '2rem' }}>Cargando ficha del paciente...</div>;
   if (!patient) return <div style={{ padding: '2rem' }}>Paciente no encontrado.</div>;
 
+  const saldoTotal = consultas.reduce((acc, c) => acc + (c.costo_total - c.monto_pagado), 0);
+
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2rem' }}>
@@ -147,6 +167,11 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
           style={{ padding: '1rem', background: 'none', border: 'none', borderBottom: activeTab === 'odontograma' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'odontograma' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: activeTab === 'odontograma' ? 600 : 400, cursor: 'pointer' }}>
           Odontograma
         </button>
+        <button 
+          onClick={() => setActiveTab('evolucion')}
+          style={{ padding: '1rem', background: 'none', border: 'none', borderBottom: activeTab === 'evolucion' ? '2px solid var(--primary)' : '2px solid transparent', color: activeTab === 'evolucion' ? 'var(--primary)' : 'var(--text-muted)', fontWeight: activeTab === 'evolucion' ? 600 : 400, cursor: 'pointer' }}>
+          Evolución y Consultas
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -170,6 +195,23 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Contacto de Emergencia</p>
               <p>{patient.contacto_emergencia || "No registrado"}</p>
             </div>
+          </div>
+          
+          <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--border)' }}>
+            <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <CreditCard size={20} /> Estado Financiero
+            </h3>
+            {saldoTotal > 0 ? (
+              <div style={{ display: 'inline-block', backgroundColor: '#fdedec', color: '#c0392b', padding: '1rem 1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid #f5b7b1' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>SALDO DEUDOR TOTAL</p>
+                <p style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700 }}>${saldoTotal.toFixed(2)}</p>
+              </div>
+            ) : (
+              <div style={{ display: 'inline-block', backgroundColor: '#e8f8f5', color: '#27ae60', padding: '1rem 1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid #abebc6' }}>
+                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>CUENTA AL DÍA</p>
+                <p style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700 }}>$0.00</p>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -241,6 +283,14 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
             readOnly={false} 
           />
         </div>
+      )}
+
+      {activeTab === 'evolucion' && (
+        <ConsultasTimeline 
+          pacienteId={resolvedParams.id}
+          consultas={consultas}
+          onConsultasUpdated={fetchConsultas}
+        />
       )}
     </div>
   );
