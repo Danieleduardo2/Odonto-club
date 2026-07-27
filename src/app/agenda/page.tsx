@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import Sidebar from "@/components/Sidebar";
 import styles from "../page.module.css";
 import { Calendar as CalendarIcon, Clock, User, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
@@ -74,10 +73,8 @@ export default function Agenda() {
   const pastAppointments = appointments.filter(a => a.status === 'completed' || a.status === 'cancelled');
 
   return (
-    <div className={styles.container}>
-      <Sidebar />
-      <main className={styles.main}>
-        <header className={styles.header}>
+    <>
+      <header className={styles.header}>
           <h2 className={`${styles.title} fade-in`} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <CalendarIcon size={28} color="var(--primary)" /> Agenda de Citas
           </h2>
@@ -149,7 +146,6 @@ export default function Agenda() {
 
           </div>
         )}
-      </main>
-    </div>
+    </>
   );
 }
