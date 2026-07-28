@@ -3,6 +3,15 @@ import { supabase } from '@/lib/supabase';
 
 const VERIFY_TOKEN = "odontoclub_secreto_2026";
 
+// Función auxiliar para registrar logs
+async function logWebhook(payload: any, errorMsg: string | null = null) {
+  try {
+    await supabase.from('webhook_logs').insert([{ payload, error_message: errorMsg }]);
+  } catch (e) {
+    console.error("No se pudo guardar el log", e);
+  }
+}
+
 // 1. ENDPOINT GET: Meta lo usa para verificar
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -45,6 +54,11 @@ async function sendWhatsAppMessage(toPhone: string, text: string) {
       text: { body: text }
     })
   });
+  
+  const responseData = await res.json();
+  if (!res.ok) {
+    await logWebhook({ action: "send_message_error", response: responseData }, `Error enviando a ${toPhone}`);
+  }
   return res.ok;
 }
 
@@ -52,6 +66,9 @@ async function sendWhatsAppMessage(toPhone: string, text: string) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    
+    // Log the entire incoming payload to debug
+    await logWebhook(body);
     
     if (body.object === "whatsapp_business_account" && body.entry?.[0]?.changes?.[0]?.value?.messages) {
       const message = body.entry[0].changes[0].value.messages[0];
@@ -158,8 +175,9 @@ export async function POST(request: Request) {
     }
     
     return NextResponse.json({ status: "success" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Webhook POST Error:", error);
+    await logWebhook(null, error.message || String(error));
     return NextResponse.json({ status: "error" }, { status: 500 });
   }
 }
