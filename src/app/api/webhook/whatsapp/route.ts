@@ -89,7 +89,7 @@ export async function POST(request: Request) {
         .from('whatsapp_sessions')
         .select('*')
         .eq('phone_number', fromNumber)
-        .single();
+        .maybeSingle();
 
       if (!session) {
         // Buscar si el número ya existe en pacientes
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
           .from('patients')
           .select('id')
           .eq('phone_number', fromNumber)
-          .single();
+          .maybeSingle();
 
         const newSession = {
           phone_number: fromNumber,
