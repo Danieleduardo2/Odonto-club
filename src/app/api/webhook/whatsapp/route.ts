@@ -26,22 +26,20 @@ export async function GET(request: Request) {
 }
 
 // Función auxiliar para enviar mensajes de texto por WhatsApp
-async function sendWhatsAppMessage(toPhone: string, text: string) {
+async function sendWhatsAppMessage(toPhone: string, text: string, incomingPhoneId: string) {
   const { data: settingsData } = await supabase
     .from('settings')
     .select('key, value')
-    .in('key', ['whatsapp_access_token', 'whatsapp_phone_id']);
+    .eq('key', 'whatsapp_access_token');
     
   let accessToken = "";
-  let phoneId = "";
   settingsData?.forEach(s => {
     if (s.key === 'whatsapp_access_token') accessToken = s.value;
-    if (s.key === 'whatsapp_phone_id') phoneId = s.value;
   });
 
-  if (!accessToken || !phoneId) return false;
+  if (!accessToken) return false;
 
-  const res = await fetch(`https://graph.facebook.com/v19.0/${phoneId}/messages`, {
+  const res = await fetch(`https://graph.facebook.com/v19.0/${incomingPhoneId}/messages`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${accessToken}`,
@@ -71,6 +69,8 @@ export async function POST(request: Request) {
     await logWebhook(body);
     
     if (body.object === "whatsapp_business_account" && body.entry?.[0]?.changes?.[0]?.value?.messages) {
+      const metadata = body.entry[0].changes[0].value.metadata;
+      const incomingPhoneId = metadata?.phone_number_id;
       const message = body.entry[0].changes[0].value.messages[0];
       const fromNumber = message.from; 
       let msgText = message.type === "text" ? message.text.body : "";
@@ -120,10 +120,10 @@ export async function POST(request: Request) {
 
       if (currentStep === 'greeting') {
         if (!session.patient_id) {
-          await sendWhatsAppMessage(fromNumber, "¡Hola! Bienvenido a OdontoClub 🦷. Para ayudarte a agendar, ¿me podrías decir tu nombre y apellido?");
+          await sendWhatsAppMessage(fromNumber, "¡Hola! Bienvenido a OdontoClub 🦷. Para ayudarte a agendar, ¿me podrías decir tu nombre y apellido?", incomingPhoneId);
           await supabase.from('whatsapp_sessions').update({ step: 'asking_name' }).eq('phone_number', fromNumber);
         } else {
-          await sendWhatsAppMessage(fromNumber, "¡Hola de nuevo! 👋 Soy el asistente virtual de OdontoClub. Por favor dime qué día te gustaría agendar tu próxima cita (ej. Mañana, el Lunes, el 15 de Agosto).");
+          await sendWhatsAppMessage(fromNumber, "¡Hola de nuevo! 👋 Soy el asistente virtual de OdontoClub. Por favor dime qué día te gustaría agendar tu próxima cita (ej. Mañana, el Lunes, el 15 de Agosto).", incomingPhoneId);
           await supabase.from('whatsapp_sessions').update({ step: 'choosing_date' }).eq('phone_number', fromNumber);
         }
       } 
@@ -140,14 +140,14 @@ export async function POST(request: Request) {
           .select()
           .single();
 
-        await sendWhatsAppMessage(fromNumber, `¡Gracias ${firstName}! Ya estás registrado. ¿Qué día te gustaría agendar tu cita?`);
+        await sendWhatsAppMessage(fromNumber, `¡Gracias ${firstName}! Ya estás registrado. ¿Qué día te gustaría agendar tu cita?`, incomingPhoneId);
         await supabase.from('whatsapp_sessions').update({ step: 'choosing_date', patient_id: newPatient.id }).eq('phone_number', fromNumber);
       }
 
       else if (currentStep === 'choosing_date') {
         // Aquí conectaremos luego la lógica de disponibilidad. Por ahora, mock.
         const requestedDate = msgText;
-        await sendWhatsAppMessage(fromNumber, `Perfecto, para el día ${requestedDate} tengo disponibilidad a las 10:00 AM y a las 3:00 PM. ¿Cuál prefieres?`);
+        await sendWhatsAppMessage(fromNumber, `Perfecto, para el día ${requestedDate} tengo disponibilidad a las 10:00 AM y a las 3:00 PM. ¿Cuál prefieres?`, incomingPhoneId);
         await supabase.from('whatsapp_sessions').update({ 
           step: 'choosing_time', 
           context_data: { date: requestedDate } 
@@ -166,7 +166,7 @@ export async function POST(request: Request) {
           status: 'scheduled'
         }]);
 
-        await sendWhatsAppMessage(fromNumber, `¡Listo! 🎉 Tu cita ha sido confirmada para las ${requestedTime}. ¡Te esperamos!`);
+        await sendWhatsAppMessage(fromNumber, `¡Listo! 🎉 Tu cita ha sido confirmada para las ${requestedTime}. ¡Te esperamos!`, incomingPhoneId);
         
         // Reiniciar la sesión
         await supabase.from('whatsapp_sessions').update({ step: 'greeting', context_data: {} }).eq('phone_number', fromNumber);
