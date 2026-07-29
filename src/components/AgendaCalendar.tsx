@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import React, { useState, useEffect } from 'react';
 import { Calendar, dateFnsLocalizer, View, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -14,6 +14,16 @@ export default function AgendaCalendar({ refreshTrigger, onEventClick, onSlotCli
   const [events, setEvents] = useState<any[]>([]);
   const [view, setView] = useState<View>(Views.WEEK);
   const [date, setDate] = useState(new Date());
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) setView(Views.DAY);
+      else setView(Views.WEEK);
+    };
+    handleResize(); // Set initially
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   useEffect(() => {
     fetchData();

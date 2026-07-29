@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import Select from 'react-select';
 
 export function AppointmentModal({ isOpen, onClose, selectedDate, eventToEdit, onSuccess }: any) {
   const [patients, setPatients] = useState<any[]>([]);
@@ -25,7 +26,6 @@ export function AppointmentModal({ isOpen, onClose, selectedDate, eventToEdit, o
         setDuration(eventToEdit.resource.duration_minutes || 30);
         setStatus(eventToEdit.resource.status);
       } else if (selectedDate) {
-        // Init with selected slot
         const iso = new Date(selectedDate.getTime() - (selectedDate.getTimezoneOffset() * 60000)).toISOString();
         setDate(iso.split('T')[0]);
         setTime(iso.split('T')[1].substring(0,5));
@@ -69,13 +69,8 @@ export function AppointmentModal({ isOpen, onClose, selectedDate, eventToEdit, o
       error = res.error;
     }
 
-    if (error) {
-      toast.error('Error al guardar cita');
-    } else {
-      toast.success('Cita guardada');
-      onSuccess();
-      onClose();
-    }
+    if (error) toast.error('Error al guardar cita');
+    else { toast.success('Cita guardada'); onSuccess(); onClose(); }
   };
 
   const handleDelete = async () => {
@@ -87,27 +82,39 @@ export function AppointmentModal({ isOpen, onClose, selectedDate, eventToEdit, o
 
   if (!isOpen) return null;
 
+  // Format options for react-select
+  const patientOptions = patients.map(p => ({ value: p.id, label: `${p.first_name} ${p.last_name}` }));
+  const treatmentOptions = treatments.map(t => ({ value: t.id, label: t.name }));
+
   return (
     <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, backgroundColor:'rgba(0,0,0,0.5)', zIndex: 100, display:'flex', justifyContent:'center', alignItems:'center'}}>
-      <div className="card fade-in" style={{ width: '450px', padding: '1.5rem', position: 'relative' }}>
+      <div className="card fade-in" style={{ width: '95%', maxWidth: '500px', padding: '1.5rem', position: 'relative' }}>
         <button onClick={onClose} style={{ position:'absolute', top:'1rem', right:'1rem', background:'none', border:'none', cursor:'pointer' }}><X/></button>
         <h3 style={{ marginBottom: '1rem', color: '#0f2c49' }}>{eventToEdit ? 'Editar Cita' : 'Nueva Cita'}</h3>
         
         <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
           <div>
             <label style={{ display:'block', marginBottom:'0.5rem', fontWeight:600 }}>Paciente</label>
-            <select className="input" style={{width:'100%', padding:'0.5rem', borderRadius:'4px', border:'1px solid #e2e8f0'}} value={patientId} onChange={e=>setPatientId(e.target.value)}>
-              <option value="">Selecciona un paciente...</option>
-              {patients.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>)}
-            </select>
+            <Select 
+              options={patientOptions}
+              value={patientOptions.find(opt => opt.value === patientId) || null}
+              onChange={(selected: any) => setPatientId(selected ? selected.value : '')}
+              placeholder="Buscar paciente..."
+              isClearable
+              styles={{ control: (base) => ({ ...base, borderColor: '#e2e8f0', padding: '2px' }) }}
+            />
           </div>
           
           <div>
             <label style={{ display:'block', marginBottom:'0.5rem', fontWeight:600 }}>Tratamiento</label>
-            <select className="input" style={{width:'100%', padding:'0.5rem', borderRadius:'4px', border:'1px solid #e2e8f0'}} value={treatmentId} onChange={e=>handleTreatmentChange(e.target.value)}>
-              <option value="">Selecciona un tratamiento...</option>
-              {treatments.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-            </select>
+            <Select 
+              options={treatmentOptions}
+              value={treatmentOptions.find(opt => opt.value === treatmentId) || null}
+              onChange={(selected: any) => handleTreatmentChange(selected ? selected.value : '')}
+              placeholder="Buscar tratamiento..."
+              isClearable
+              styles={{ control: (base) => ({ ...base, borderColor: '#e2e8f0', padding: '2px' }) }}
+            />
           </div>
 
           <div style={{ display:'flex', gap:'1rem' }}>

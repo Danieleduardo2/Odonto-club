@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -49,7 +49,7 @@ export function BlockModal({ isOpen, onClose, selectedDate, onSuccess }: any) {
 
   return (
     <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, backgroundColor:'rgba(0,0,0,0.5)', zIndex: 110, display:'flex', justifyContent:'center', alignItems:'center'}}>
-      <div className="card fade-in" style={{ width: '400px', padding: '1.5rem', position: 'relative' }}>
+      <div className="card fade-in" style={{ width: '95%', maxWidth: '400px', padding: '1.5rem', position: 'relative' }}>
         <button onClick={onClose} style={{ position:'absolute', top:'1rem', right:'1rem', background:'none', border:'none', cursor:'pointer' }}><X/></button>
         <h3 style={{ marginBottom: '1rem', color: '#0f2c49' }}>Bloquear Horario</h3>
         

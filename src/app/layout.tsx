@@ -38,11 +38,11 @@ export default function RootLayout({
             },
           }}
         />
-        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-page)' }}>
+        <div className="app-container">
           <Sidebar />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+          <div className="main-content">
             <TopBar />
-            <div style={{ flex: 1, padding: '1.25rem 3rem', overflowY: 'auto' }}>
+            <div className="page-container">
               {children}
             </div>
           </div>
