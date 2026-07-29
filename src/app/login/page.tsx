@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -46,7 +46,7 @@ export default function LoginPage() {
       
       <div className={styles.loginCard}>
         <div className={styles.logoSection}>
-          <img src="/images/logoodontoclub.png" alt="OdontoClub" style={{ width: '90px', marginBottom: '1rem', borderRadius: '50%' }} />
+          <img src="/logo.png" alt="OdontoClub" style={{ width: '90px', marginBottom: '1rem', borderRadius: '50%' }} />
           <h1>ODONTOCLUB</h1>
           <p>La sonrisa que todos queremos</p>
         </div>
