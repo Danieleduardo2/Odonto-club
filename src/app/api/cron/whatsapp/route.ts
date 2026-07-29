@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 // Helper function to replace variables in template
 const replaceTemplateVars = (template: string, vars: string[]) => {
   let result = template;
