@@ -224,14 +224,16 @@ export default function PatientProfile({ params }: { params: Promise<{ id: strin
               <CreditCard size={20} /> Estado Financiero
             </h3>
             {saldoTotal > 0 ? (
-              <div style={{ display: 'inline-block', backgroundColor: '#fdedec', color: '#c0392b', padding: '1rem 1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid #f5b7b1' }}>
-                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>SALDO DEUDOR TOTAL</p>
-                <p style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700 }}>${saldoTotal.toFixed(2)}</p>
+              <div>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Saldo Pendiente</p>
+                <p style={{ margin: 0, fontSize: '1.25rem', fontWeight: 600, color: '#ef4444' }}>${saldoTotal.toFixed(2)}</p>
               </div>
             ) : (
-              <div style={{ display: 'inline-block', backgroundColor: '#e8f8f5', color: '#27ae60', padding: '1rem 1.5rem', borderRadius: 'var(--radius-md)', border: '1px solid #abebc6' }}>
-                <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>CUENTA AL DÍA</p>
-                <p style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700 }}>$0.00</p>
+              <div>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>Estado</p>
+                <p style={{ margin: 0, fontSize: '1rem', fontWeight: 500, color: '#10b981', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10b981' }}></span> Cuenta al día
+                </p>
               </div>
             )}
           </div>
