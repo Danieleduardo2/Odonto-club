@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 import { useState } from "react";
 import styles from "../page.module.css";
 import { Settings as SettingsIcon, Stethoscope, Clock, MessageSquare } from "lucide-react";
 import TreatmentsConfig from "@/components/config/TreatmentsConfig";
-// import WhatsAppConfig from "@/components/config/WhatsAppConfig"; // We'll move the old code here later if needed
+import ScheduleConfig from "@/components/config/ScheduleConfig";
+// import WhatsAppConfig from "@/components/config/WhatsAppConfig";
 
 export default function ConfiguracionPage() {
   const [activeTab, setActiveTab] = useState('treatments');
@@ -44,7 +45,7 @@ export default function ConfiguracionPage() {
               display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', transition: 'all 0.2s'
             }}
           >
-            <Clock size={18} /> Horarios (Próximamente)
+            <Clock size={18} /> Horarios Laborales
           </button>
 
           <button 
@@ -62,14 +63,7 @@ export default function ConfiguracionPage() {
         {/* TABS CONTENT */}
         <div>
           {activeTab === 'treatments' && <TreatmentsConfig />}
-          
-          {activeTab === 'schedule' && (
-            <div className="card" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-              <Clock size={48} style={{ margin: '0 auto 1rem auto', opacity: 0.2 }} />
-              <h3>Configuración de Horarios Laborales</h3>
-              <p>Esta sección estará disponible en la próxima actualización.</p>
-            </div>
-          )}
+          {activeTab === 'schedule' && <ScheduleConfig />}
 
           {activeTab === 'whatsapp' && (
             <div className="card" style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
