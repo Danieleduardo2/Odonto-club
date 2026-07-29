@@ -33,7 +33,6 @@ export default function TopBar() {
       </div>
       
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', color: '#64748b' }}>
-        <LayoutGrid size={20} style={{ cursor: 'pointer' }} />
         <Bell size={20} style={{ cursor: 'pointer' }} />
         <div style={{
           width: '32px',
