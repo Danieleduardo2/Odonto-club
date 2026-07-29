@@ -11,8 +11,8 @@ export default function Sidebar() {
   const navItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Pacientes", href: "/pacientes", icon: Users },
-    { name: "Citas", href: "/citas", icon: CalendarDays },
-    { name: "WhatsApp Config", href: "/configuracion", icon: Settings },
+    { name: "Agenda", href: "/agenda", icon: CalendarDays },
+    { name: "Configuración", href: "/configuracion", icon: Settings },
   ];
 
   return (
@@ -34,10 +34,6 @@ export default function Sidebar() {
             </Link>
           );
         })}
-        <Link href="/agenda" className={`${styles.navItem} ${pathname.startsWith('/agenda') ? styles.active : ''}`}>
-          <span className={styles.icon}><Calendar size={20} /></span>
-          <span className={styles.text}>Agenda</span>
-        </Link>
       </nav>
 
       <div className={styles.bottomLogoContainer} style={{ marginTop: 'auto' }}>
