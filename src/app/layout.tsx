@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Sidebar from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"] });
 
@@ -38,15 +39,9 @@ export default function RootLayout({
             },
           }}
         />
-        <div className="app-container">
-          <Sidebar />
-          <div className="main-content">
-            <TopBar />
-            <div className="page-container">
-              {children}
-            </div>
-          </div>
-        </div>
+        <LayoutWrapper>
+          {children}
+        </LayoutWrapper>
       </body>
     </html>
   );
