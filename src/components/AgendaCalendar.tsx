@@ -37,7 +37,7 @@ export default function AgendaCalendar() {
     // Fetch blocks
     const { data: blocks } = await supabase.from('schedule_blocks').select('*');
 
-    const calendarEvents = [];
+    const calendarEvents: any[] = [];
     
     if (appts) {
       appts.forEach(app => {
